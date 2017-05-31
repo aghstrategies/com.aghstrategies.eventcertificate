@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/eventcertificate</path>
+    <page_callback>CRM_Eventcertificate_Page_CertificatePage</page_callback>
+    <title>CertificatePage</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
