@@ -15,10 +15,12 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
       try {
         $participant = civicrm_api3('Participant', 'get', array(
           'sequential' => 1,
-          'contact_id' => $_GET["cid"],
-          'event_id' => $_GET["eid"],
-          'status_id' => "Registered",
-          'role_id' => "Attendee",
+          'contact_id' => $contactId,
+          'event_id' => $eventId,
+          // participant status: registered
+          'status_id' => 1,
+          // Role: Attendee
+          'role_id' => 1,
         ));
       }
       catch (CiviCRM_API3_Exception $e) {
@@ -37,8 +39,8 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   public function getHTMLwithTokens($contactId) {
     try {
       $result = civicrm_api3('MessageTemplate', 'getsingle', array(
-        'sequential' => 1,
-        'id' => 65,
+        'msg_title' => "Event Certificate - Certificate",
+        'is_reserved' => 0,
       ));
     }
     catch (CiviCRM_API3_Exception $e) {
@@ -75,9 +77,10 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     $textToDisplay = self::textToDisplay();
     $this->assign('currentTime', date('Y-m-d H:i:s'));
     $this->assign('messageHtml', $textToDisplay['text']);
-    if ($textToDisplay['pdf'] == 1) {
-      CRM_Utils_PDF_Utils::html2pdf($textToDisplay['text'], "CiviEventCertificate.pdf", FALSE, $formValues);
-    }
+    // will download the pdf when you go to this url
+    // if ($textToDisplay['pdf'] == 1) {
+    //   CRM_Utils_PDF_Utils::html2pdf($textToDisplay['text'], "CiviEventCertificate.pdf", FALSE, $formValues);
+    // }
     parent::run();
   }
 
