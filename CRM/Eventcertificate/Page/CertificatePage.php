@@ -66,7 +66,6 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
       $messageToken,
       'CRM_Contact_Form_Task_PDFLetterCommon'
     );
-    // print_r($contact); die();
     $tokenHtml = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
     return $tokenHtml;
   }
