@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <extension key="com.aghstrategies.eventcertificate" type="module">
   <file>eventcertificate</file>
-  <name>FIXME</name>
+  <name>Event Certificate</name>
   <description>FIXME</description>
   <license>AGPL-3.0</license>
   <maintainer>
