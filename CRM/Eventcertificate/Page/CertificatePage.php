@@ -3,10 +3,10 @@
 class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
 
   public function textToDisplay() {
-    // Default text
+    // Default text to display
     $textToDisplay = array(
       'pdf' => 0,
-      'text' => "not enough information to process your request",
+      'text' => "not enough information to process your request please contact XXX",
     );
     // Check for contact id and event id
     if (!empty($_GET["cid"]) && !empty($_GET["eid"])) {
@@ -27,17 +27,18 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
         $error = $e->getMessage();
         CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
       }
-      // check that the contact is a registered attendee for the event
+      // check that the contact is a registered attendee for the event if so make pdf
       if (!empty($participant['values'][0])) {
         $textToDisplay['pdf']  = 1;
-        $textToDisplay['text'] = self::getHTMLwithTokens($contactId);
+        $textToDisplay['text'] = self::getHTMLwithTokens($contactId, $eventId);
       }
     }
     return $textToDisplay;
   }
 
-  public function getHTMLwithTokens($contactId) {
+  public function getHTMLwithTokens($contactId, $eventId) {
     try {
+      // Get message template created by the extension
       $result = civicrm_api3('MessageTemplate', 'getsingle', array(
         'msg_title' => "Event Certificate - Certificate",
         'is_reserved' => 0,
@@ -50,15 +51,24 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     $html_message = $result['msg_html'];
 
     $messageToken = CRM_Utils_Token::getTokens($result['msg_html']);
+    // print_r($messageToken); die();
     $returnProperties = array();
     if (isset($messageToken['contact'])) {
       foreach ($messageToken['contact'] as $key => $value) {
         $returnProperties[$value] = 1;
       }
     }
+    // if (isset($messageToken['event'])) {
+    //   foreach ($messageToken['event'] as $key => $value) {
+    //     $returnProperties[$value] = 1;
+    //   }
+    // }
     $categories = array();
     $formValues = $result['values'][0];
-    $params = array('contact_id' => $contactId);
+    $params = array(
+      'contact_id' => $contactId,
+      'event_id' => $eventId,
+    );
     list($contact) = CRM_Utils_Token::getTokenDetails(
       $params,
       $returnProperties,

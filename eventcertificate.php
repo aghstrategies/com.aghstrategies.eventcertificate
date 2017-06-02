@@ -2,6 +2,10 @@
 
 require_once 'eventcertificate.civix.php';
 
+function eventcertificate_civicrm_buildForm($formName, &$form) {
+  // print_r($formName); die();
+}
+
 /**
  * Implements hook_civicrm_config().
  *
