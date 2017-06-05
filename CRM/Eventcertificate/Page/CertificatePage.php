@@ -53,33 +53,57 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     $messageToken = CRM_Utils_Token::getTokens($result['msg_html']);
     // print_r($messageToken); die();
     $returnProperties = array();
+    $otherReturnProperties = '';
     if (isset($messageToken['contact'])) {
       foreach ($messageToken['contact'] as $key => $value) {
         $returnProperties[$value] = 1;
       }
     }
-    // if (isset($messageToken['event'])) {
-    //   foreach ($messageToken['event'] as $key => $value) {
-    //     $returnProperties[$value] = 1;
-    //   }
-    // }
     $categories = array();
     $formValues = $result['values'][0];
     $params = array(
       'contact_id' => $contactId,
       'event_id' => $eventId,
     );
+
     list($contact) = CRM_Utils_Token::getTokenDetails(
       $params,
-      $returnProperties,
-      TRUE,
-      TRUE,
       NULL,
-      $messageToken,
-      'CRM_Contact_Form_Task_PDFLetterCommon'
+      FALSE,
+      FALSE,
+      NULL,
+      array(),
+      'CRM_Event_BAO_Participant'
     );
-    $tokenHtml = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
+
+    $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
+    foreach ($contact as $id => $contactTokens) {
+      $contact[$id] = array_merge($contactTokens, $eventTokens);
+    }
+    $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
+    $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
     return $tokenHtml;
+  }
+
+  public function getEventTokenInfo($eventId, $fields) {
+    $eventParams = array(
+      'id' => $eventId,
+    );
+    foreach ($fields as $key => $field) {
+      $eventParams['return'][] = $field;
+    }
+    try {
+      $eventInfo = civicrm_api3('Event', 'getsingle', $eventParams);
+    }
+    catch (CiviCRM_API3_Exception $e) {
+      $error = $e->getMessage();
+      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+    }
+    $eventTokens = array();
+    foreach ($eventInfo as $key => $value) {
+      $eventTokens["event." . $key] = $value;
+    }
+    return $eventTokens;
   }
 
   public function run() {
