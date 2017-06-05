@@ -77,12 +77,39 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     );
 
     $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
+    $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
     foreach ($contact as $id => $contactTokens) {
-      $contact[$id] = array_merge($contactTokens, $eventTokens);
+      $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
     }
     $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
     $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
     return $tokenHtml;
+  }
+
+  public function getParticipantTokenInfo($eventId, $contactId, $fields) {
+    $participantParams = array(
+      'sequential' => 1,
+      'contact_id' => $contactId,
+      'event_id' => $eventId,
+    );
+    if (!empty($_GET["pid"])) {
+      $participantParams['id'] = $_GET["pid"];
+    }
+    foreach ($fields as $key => $field) {
+      $participantParams['return'][] = $field;
+    }
+    try {
+      $participantInfo = civicrm_api3('Participant', 'get', $participantParams);
+    }
+    catch (CiviCRM_API3_Exception $e) {
+      $error = $e->getMessage();
+      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+    }
+    $participantTokens = array();
+    foreach ($participantInfo['values'][0] as $key => $value) {
+      $participantTokens["participant." . $key] = $value;
+    }
+    return $participantTokens;
   }
 
   public function getEventTokenInfo($eventId, $fields) {
