@@ -39,57 +39,58 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   public function getHTMLwithTokens($contactId, $eventId) {
     try {
       // Get message template created by the extension
-      $result = civicrm_api3('MessageTemplate', 'getsingle', array(
+      $result = civicrm_api3('MessageTemplate', 'get', array(
         'msg_title' => "Event Certificate - Certificate",
         'is_reserved' => 0,
+        'sequential' => 1,
       ));
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
       CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
-    $html_message = $result['msg_html'];
-
-    $messageToken = CRM_Utils_Token::getTokens($result['msg_html']);
-    // print_r($messageToken); die();
-    $returnProperties = array();
-    $otherReturnProperties = '';
-    if (isset($messageToken['contact'])) {
-      foreach ($messageToken['contact'] as $key => $value) {
-        $returnProperties[$value] = 1;
+    if (!empty($result['values'][0]['msg_html'])) {
+      $html_message = $result['values'][0]['msg_html'];
+      $messageToken = CRM_Utils_Token::getTokens($html_message);
+      $returnProperties = array();
+      $otherReturnProperties = '';
+      if (isset($messageToken['contact'])) {
+        foreach ($messageToken['contact'] as $key => $value) {
+          $returnProperties[$value] = 1;
+        }
       }
-    }
-    $participantTokens = $eventTokens = $categories = array();
-    $formValues = NULL;
-    if (!empty($result['values'][0])) {
-      $formValues = $result['values'][0];
-    }
-    $params = array(
-      'contact_id' => $contactId,
-      'event_id' => $eventId,
-    );
+      $participantTokens = $eventTokens = $categories = array();
+      $formValues = NULL;
+      if (!empty($result['values'][0])) {
+        $formValues = $result['values'][0];
+      }
+      $params = array(
+        'contact_id' => $contactId,
+        'event_id' => $eventId,
+      );
 
-    list($contact) = CRM_Utils_Token::getTokenDetails(
-      $params,
-      NULL,
-      FALSE,
-      FALSE,
-      NULL,
-      array(),
-      'CRM_Event_BAO_Participant'
-    );
-    if (!empty($messageToken['event'])) {
-      $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
+      list($contact) = CRM_Utils_Token::getTokenDetails(
+        $params,
+        NULL,
+        FALSE,
+        FALSE,
+        NULL,
+        array(),
+        'CRM_Event_BAO_Participant'
+      );
+      if (!empty($messageToken['event'])) {
+        $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
+      }
+      if (!empty($messageToken['participant'])) {
+        $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
+      }
+      foreach ($contact as $id => $contactTokens) {
+        $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
+      }
+      $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
+      $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
+      return $tokenHtml;
     }
-    if (!empty($messageToken['participant'])) {
-      $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
-    }
-    foreach ($contact as $id => $contactTokens) {
-      $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
-    }
-    $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
-    $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
-    return $tokenHtml;
   }
 
   public function getParticipantTokenInfo($eventId, $contactId, $fields) {
