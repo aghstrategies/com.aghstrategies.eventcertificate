@@ -59,8 +59,11 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
         $returnProperties[$value] = 1;
       }
     }
-    $categories = array();
-    $formValues = $result['values'][0];
+    $participantTokens = $eventTokens = $categories = array();
+    $formValues = NULL;
+    if (!empty($result['values'][0])) {
+      $formValues = $result['values'][0];
+    }
     $params = array(
       'contact_id' => $contactId,
       'event_id' => $eventId,
@@ -75,9 +78,12 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
       array(),
       'CRM_Event_BAO_Participant'
     );
-
-    $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
-    $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
+    if (!empty($messageToken['event'])) {
+      $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
+    }
+    if (!empty($messageToken['participant'])) {
+      $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
+    }
     foreach ($contact as $id => $contactTokens) {
       $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
     }
