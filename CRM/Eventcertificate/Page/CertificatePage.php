@@ -143,7 +143,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   public function run() {
     CRM_Utils_System::setTitle(ts('Certificate Page'));
     $textToDisplay = self::textToDisplay();
-    $this->assign('currentTime', date('Y-m-d H:i:s'));
+    // $this->assign('currentTime', date('Y-m-d H:i:s'));
     $this->assign('messageHtml', $textToDisplay['text']);
     // will download the pdf when you go to this url
     if ($textToDisplay['pdf'] == 1) {
