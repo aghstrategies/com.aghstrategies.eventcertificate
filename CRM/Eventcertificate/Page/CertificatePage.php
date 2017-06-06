@@ -39,51 +39,58 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   public function getHTMLwithTokens($contactId, $eventId) {
     try {
       // Get message template created by the extension
-      $result = civicrm_api3('MessageTemplate', 'getsingle', array(
+      $result = civicrm_api3('MessageTemplate', 'get', array(
         'msg_title' => "Event Certificate - Certificate",
         'is_reserved' => 0,
+        'sequential' => 1,
       ));
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
       CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
-    $html_message = $result['msg_html'];
-
-    $messageToken = CRM_Utils_Token::getTokens($result['msg_html']);
-    // print_r($messageToken); die();
-    $returnProperties = array();
-    $otherReturnProperties = '';
-    if (isset($messageToken['contact'])) {
-      foreach ($messageToken['contact'] as $key => $value) {
-        $returnProperties[$value] = 1;
+    if (!empty($result['values'][0]['msg_html'])) {
+      $html_message = $result['values'][0]['msg_html'];
+      $messageToken = CRM_Utils_Token::getTokens($html_message);
+      $returnProperties = array();
+      $otherReturnProperties = '';
+      if (isset($messageToken['contact'])) {
+        foreach ($messageToken['contact'] as $key => $value) {
+          $returnProperties[$value] = 1;
+        }
       }
-    }
-    $categories = array();
-    $formValues = $result['values'][0];
-    $params = array(
-      'contact_id' => $contactId,
-      'event_id' => $eventId,
-    );
+      $participantTokens = $eventTokens = $categories = array();
+      $formValues = NULL;
+      if (!empty($result['values'][0])) {
+        $formValues = $result['values'][0];
+      }
+      $params = array(
+        'contact_id' => $contactId,
+        'event_id' => $eventId,
+      );
 
-    list($contact) = CRM_Utils_Token::getTokenDetails(
-      $params,
-      NULL,
-      FALSE,
-      FALSE,
-      NULL,
-      array(),
-      'CRM_Event_BAO_Participant'
-    );
-
-    $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
-    $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
-    foreach ($contact as $id => $contactTokens) {
-      $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
+      list($contact) = CRM_Utils_Token::getTokenDetails(
+        $params,
+        NULL,
+        FALSE,
+        FALSE,
+        NULL,
+        array(),
+        'CRM_Event_BAO_Participant'
+      );
+      if (!empty($messageToken['event'])) {
+        $eventTokens = self::getEventTokenInfo($eventId, $messageToken['event']);
+      }
+      if (!empty($messageToken['participant'])) {
+        $participantTokens = self::getParticipantTokenInfo($eventId, $contactId, $messageToken['participant']);
+      }
+      foreach ($contact as $id => $contactTokens) {
+        $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
+      }
+      $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
+      $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
+      return $tokenHtml;
     }
-    $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
-    $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
-    return $tokenHtml;
   }
 
   public function getParticipantTokenInfo($eventId, $contactId, $fields) {
@@ -128,7 +135,12 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     }
     $eventTokens = array();
     foreach ($eventInfo as $key => $value) {
-      $eventTokens["event." . $key] = $value;
+      if ($key == 'start_date' || $key == 'end_date') {
+        $eventTokens["event." . $key] = CRM_Utils_Date::customFormat($value);
+      }
+      else {
+        $eventTokens["event." . $key] = $value;
+      }
     }
     return $eventTokens;
   }
@@ -136,7 +148,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   public function run() {
     CRM_Utils_System::setTitle(ts('Certificate Page'));
     $textToDisplay = self::textToDisplay();
-    $this->assign('currentTime', date('Y-m-d H:i:s'));
+    // $this->assign('currentTime', date('Y-m-d H:i:s'));
     $this->assign('messageHtml', $textToDisplay['text']);
     // will download the pdf when you go to this url
     // if ($textToDisplay['pdf'] == 1) {
