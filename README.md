@@ -1,9 +1,16 @@
-Page created by extension:
+# This Extension:
 
-http://wpmaster/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Feventcertificate&cid=203&eid=2
+Creates a URL which when passed a contact id and event id for a participant record with a role of attendee and status registered will create a pdf and download it.
 
-Things to do:
+If there is no valid participant record it will display help text.
 
-1. create a button on the page to download the template as a pdf (https://github.com/civicrm/civicrm-core/blob/c1cc5247b974a534b24fb4e9315d82e276fecea6/CRM/Contact/Form/Task/PDFLetterCommon.php#L402) or just make it happen automatically by uncommenting code in run?
-3. make event dates format appropriately: https://github.com/civicrm/civicrm-core/blob/master/api/v3/Event.php#L263
-4. settings page to put text to display if person goes to visit the page that does not have a certificate, role type and participant status
+The Event certificate created can be edited under message templates - system workflow - Event Certificate -certificate.
+
+It is advisable to set up wkhtmltopdf when using this extension
+
+Page created by extension: http://wpmaster/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Feventcertificate&cid=203&eid=2
+
+Things we would like to add:
+
+1. Have the certificate load on the page with a button to download it below instead of automatically downloading.
+2. Create a settings page to put text to display if person goes to visit the page that does not have a certificate, and to choose the role type and participant status
