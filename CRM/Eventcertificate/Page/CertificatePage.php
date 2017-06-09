@@ -68,14 +68,16 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
         'contact_id' => $contactId,
         'event_id' => $eventId,
       );
-
+      $tokens = array();
+      CRM_Utils_Hook::tokens($tokens);
+      $categories = array_keys($tokens);
       list($contact) = CRM_Utils_Token::getTokenDetails(
         $params,
         NULL,
         FALSE,
         FALSE,
         NULL,
-        array(),
+        $messageToken,
         'CRM_Event_BAO_Participant'
       );
       if (!empty($messageToken['event'])) {
@@ -87,8 +89,9 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
       foreach ($contact as $id => $contactTokens) {
         $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
       }
-      $html_message = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
-      $tokenHtml = CRM_Utils_Token::replaceComponentTokens($html_message, $contact[$contactId], $messageToken, TRUE, TRUE);
+      $tokenHtml = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
+      $tokenHtml = CRM_Utils_Token::replaceComponentTokens($tokenHtml, $contact[$contactId], $messageToken, TRUE, TRUE);
+      $tokenHtml = CRM_Utils_Token::replaceHookTokens($tokenHtml, $contact[$contactId], $categories, TRUE, FALSE);
       return $tokenHtml;
     }
   }
