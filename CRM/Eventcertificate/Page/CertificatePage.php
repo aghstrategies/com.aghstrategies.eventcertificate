@@ -154,9 +154,9 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     // $this->assign('currentTime', date('Y-m-d H:i:s'));
     $this->assign('messageHtml', $textToDisplay['text']);
     // will download the pdf when you go to this url
-    // if ($textToDisplay['pdf'] == 1) {
-    //   CRM_Utils_PDF_Utils::html2pdf($textToDisplay['text'], "CiviEventCertificate.pdf", FALSE, $formValues);
-    // }
+    if ($textToDisplay['pdf'] == 1) {
+      CRM_Utils_PDF_Utils::html2pdf($textToDisplay['text'], "CiviEventCertificate.pdf", FALSE, $formValues);
+    }
     parent::run();
   }
 
