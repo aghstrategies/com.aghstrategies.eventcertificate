@@ -6,7 +6,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     // Default text to display
     $textToDisplay = array(
       'pdf' => 0,
-      'text' => "not enough information to process your request please contact XXX",
+      'text' => "Your attendance record for this event cannot be found. If this is an error, please contact NASW-NYS Chapter at info@naswnys.org or 518-463-4741",
     );
     // Check for contact id and event id
     if (!empty($_GET["cid"]) && !empty($_GET["eid"])) {
