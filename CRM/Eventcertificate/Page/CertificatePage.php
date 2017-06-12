@@ -1,6 +1,29 @@
 <?php
 
 class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
+  /**
+   * lifted from CRM_Campaign_Form_Petition_Signature
+   * @return integer contact Id
+   */
+  public static function getContactID() {
+    $tempID = CRM_Utils_Request::retrieve('cid', 'Positive');
+    // force to ignore the authenticated user
+    if ($tempID === '0') {
+      return $tempID;
+    }
+    //check if this is a checksum authentication
+    $userChecksum = CRM_Utils_Request::retrieve('cs', 'String');
+    if ($userChecksum) {
+      //check for anonymous user.
+      $validUser = CRM_Contact_BAO_Contact_Utils::validChecksum($tempID, $userChecksum);
+      if ($validUser) {
+        return $tempID;
+      }
+    }
+    // check if the user is registered and we have a contact ID
+    $session = CRM_Core_Session::singleton();
+    return $session->get('userID');
+  }
 
   public function textToDisplay() {
     // Default text to display
@@ -9,9 +32,9 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
       'text' => "Your attendance record for this event cannot be found. If this is an error, please contact NASW-NYS Chapter at info@naswnys.org or 518-463-4741",
     );
     // Check for contact id and event id
-    $contactId = CRM_Campaign_Form_Petition_Signature::getContactID();
-    if (!empty($contactId) && !empty($_GET["eid"])) {
-      $eventId = $_GET["eid"];
+    $contactId = self::getContactID();
+    $eventId = CRM_Utils_Request::retrieve('eid', 'Positive');
+    if (!empty($contactId) && !empty($eventId)) {
       try {
         $participant = civicrm_api3('Participant', 'get', array(
           'sequential' => 1,
@@ -149,14 +172,12 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   }
 
   public function run() {
- //   CRM_Campaign_Form_Petition_Signature::getContactID();
     CRM_Utils_System::setTitle(ts('Certificate Page'));
     $textToDisplay = self::textToDisplay();
     // $this->assign('currentTime', date('Y-m-d H:i:s'));
     $this->assign('messageHtml', $textToDisplay['text']);
     // will download the pdf when you go to this url
     if ($textToDisplay['pdf'] == 1) {
-print_r($textToDisplay); die();
       CRM_Utils_PDF_Utils::html2pdf($textToDisplay['text'], "CiviEventCertificate.pdf", FALSE, $formValues);
     }
     parent::run();
