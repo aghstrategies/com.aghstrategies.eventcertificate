@@ -179,6 +179,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     // will download the pdf when you go to this url
     if ($textToDisplay['pdf'] == 1) {
       CRM_Utils_PDF_Utils::html2pdf($textToDisplay['text'], "CiviEventCertificate.pdf", FALSE, $formValues);
+      CRM_Utils_System::civiExit();
     }
     parent::run();
   }
