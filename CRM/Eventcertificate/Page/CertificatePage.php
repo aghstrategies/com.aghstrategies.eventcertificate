@@ -17,8 +17,8 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
           'sequential' => 1,
           'contact_id' => $contactId,
           'event_id' => $eventId,
-          // participant status: registered
-          'status_id' => 1,
+          // participant status: attended
+          'status_id' => 2,
           // Role: Attendee
           'role_id' => 1,
         ));
@@ -149,6 +149,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
   }
 
   public function run() {
+    CRM_Campaign_Form_Petition_Signature::getContactID();
     CRM_Utils_System::setTitle(ts('Certificate Page'));
     $textToDisplay = self::textToDisplay();
     // $this->assign('currentTime', date('Y-m-d H:i:s'));
