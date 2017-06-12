@@ -4,6 +4,7 @@
     <path>civicrm/eventcertificate</path>
     <page_callback>CRM_Eventcertificate_Page_CertificatePage</page_callback>
     <title>CertificatePage</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <is_public>true</is_public>
+    <access_arguments>1</access_arguments>
   </item>
 </menu>
