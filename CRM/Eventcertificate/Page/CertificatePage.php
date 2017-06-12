@@ -20,6 +20,9 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
         return $tempID;
       }
     }
+    if (CRM_Core_Permission::check('administer CiviCRM')) {
+      return $tempID;
+    }
     // check if the user is registered and we have a contact ID
     $session = CRM_Core_Session::singleton();
     return $session->get('userID');
