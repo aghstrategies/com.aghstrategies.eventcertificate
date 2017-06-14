@@ -32,7 +32,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     // Default text to display
     $textToDisplay = array(
       'pdf' => 0,
-      'text' => "Your attendance record for this event cannot be found. If this is an error, please contact NASW-NYS Chapter at info@naswnys.org or 518-463-4741",
+      'text' => "Your attendance record for this event cannot be found. Please contact us for further assistance",
     );
     // Check for contact id and event id
     $contactId = self::getContactID();
