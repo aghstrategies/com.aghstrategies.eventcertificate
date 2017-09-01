@@ -22,7 +22,7 @@ function eventcertificate_checkIfExsisting($entity, $params, $delete = FALSE) {
   }
   catch (CiviCRM_API3_Exception $e) {
     $error = $e->getMessage();
-    CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+    CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
   }
   if ($result['count'] > 0 && !empty($result['values'][0]['id'])) {
     $recordFound = $result['values'][0]['id'];
@@ -79,7 +79,7 @@ function eventcertificate_civicrm_install() {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
     $PDFFormatToUse = $NewPDFFormat['api.OptionValue.create']['id'];
   }
@@ -111,7 +111,7 @@ function eventcertificate_civicrm_install() {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
     if (!empty($optionGroup['values'][0]['api.OptionValue.create']['values'][0]['id'])) {
       $optionValue = $optionGroup['values'][0]['api.OptionValue.create']['values'][0]['id'];
@@ -159,7 +159,7 @@ function eventcertificate_civicrm_install() {
   }
   catch (CiviCRM_API3_Exception $e) {
     $error = $e->getMessage();
-    CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+    CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
   }
   if (!empty($messageTemplateID2)) {
     $msgTemplateParams['id'] = $messageTemplateID2;
@@ -171,7 +171,7 @@ function eventcertificate_civicrm_install() {
   }
   catch (CiviCRM_API3_Exception $e) {
     $error = $e->getMessage();
-    CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+    CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
   }
 
   _eventcertificate_civix_civicrm_install();
