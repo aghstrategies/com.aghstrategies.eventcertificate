@@ -2,6 +2,15 @@
 
 require_once 'eventcertificate.civix.php';
 
+/*adding this to deal with permission error in 4.7.23 hopefully can trash when bug gets fixed*/
+function eventcertificate_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions)
+{
+  // skipping permission to get events thru api because of weird bug in 4.7.232
+  if ($entity == 'event' && $action == 'get') {
+      $params['check_permissions'] = false;
+  }
+}
+
 function eventcertificate_checkIfExsisting($entity, $params, $delete = FALSE) {
   $params['sequential'] = 1;
   $recordFound = NULL;
