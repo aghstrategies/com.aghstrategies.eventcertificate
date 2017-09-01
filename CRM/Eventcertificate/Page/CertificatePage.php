@@ -51,7 +51,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
       }
       catch (CiviCRM_API3_Exception $e) {
         $error = $e->getMessage();
-        CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+        CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
       }
       // check that the contact is a registered attendee for the event if so make pdf
       if (!empty($participant['values'][0])) {
@@ -73,7 +73,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
     if (!empty($result['values'][0]['msg_html'])) {
       $html_message = $result['values'][0]['msg_html'];
@@ -139,7 +139,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
     $participantTokens = array();
     foreach ($participantInfo['values'][0] as $key => $value) {
@@ -160,7 +160,7 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.eventcertificate')));
     }
     $eventTokens = array();
     foreach ($eventInfo as $key => $value) {
