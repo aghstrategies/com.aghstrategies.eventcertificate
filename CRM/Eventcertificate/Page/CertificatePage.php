@@ -43,8 +43,8 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
           'sequential' => 1,
           'contact_id' => $contactId,
           'event_id' => $eventId,
-          // participant status: attended
-          'status_id' => 2,
+          // participant status: passed
+          'status_id' => 18,
           // Role: Attendee
           'role_id' => 1,
         ));
