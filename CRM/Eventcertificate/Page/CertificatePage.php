@@ -116,10 +116,51 @@ class CRM_Eventcertificate_Page_CertificatePage extends CRM_Core_Page {
         $contact[$id] = array_merge($contactTokens, $eventTokens, $participantTokens);
       }
       $tokenHtml = CRM_Utils_Token::replaceContactTokens($html_message, $contact[$contactId], TRUE, $messageToken);
-      $tokenHtml = CRM_Utils_Token::replaceComponentTokens($tokenHtml, $contact[$contactId], $messageToken, TRUE, TRUE);
+      $tokenHtml = self::replaceComponentTokens($tokenHtml, $contact[$contactId], $messageToken, TRUE, TRUE);
       $tokenHtml = CRM_Utils_Token::replaceHookTokens($tokenHtml, $contact[$contactId], $categories, TRUE, FALSE);
       return $tokenHtml;
     }
+  }
+
+  /**
+   * NOTE This function was removed from core so I am adding it to the extension
+   * Find and replace tokens for each component.
+   *
+   * @param string $str
+   *   The string to search.
+   * @param array $contact
+   *   Associative array of contact properties.
+   * @param array $components
+   *   A list of tokens that are known to exist in the email body.
+   *
+   * @param bool $escapeSmarty
+   * @param bool $returnEmptyToken
+   *
+   * @return string
+   *   The processed string
+   *
+   */
+  public function replaceComponentTokens(&$str, $contact, $components, $escapeSmarty = FALSE, $returnEmptyToken = TRUE) {
+    if (!is_array($components) || empty($contact)) {
+      return $str;
+    }
+
+    foreach ($components as $name => $tokens) {
+      if (!is_array($tokens) || empty($tokens)) {
+        continue;
+      }
+
+      foreach ($tokens as $token) {
+        if (CRM_Utils_Token::token_match($name, $token, $str) && isset($contact[$name . '.' . $token])) {
+          CRM_Utils_Token::token_replace($name, $token, $contact[$name . '.' . $token], $str, $escapeSmarty);
+        }
+        elseif (!$returnEmptyToken) {
+          //replacing empty token
+          CRM_Utils_Token::token_replace($name, $token, "", $str, $escapeSmarty);
+        }
+      }
+    }
+    return $str;
   }
 
   public function getParticipantTokenInfo($eventId, $contactId, $fields) {
