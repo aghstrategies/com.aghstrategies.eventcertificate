@@ -13,7 +13,7 @@ The Event certificate created can be edited under message templates - system wor
 
 It is advisable to set up wkhtmltopdf when using this extension
 
-Page created by extension: https://naswnys.org/civicrm/?page=CiviCRM&q=civicrm%2Feventcertificate&cid={contact.contact_id}&eid={event.event_id}&{contact.checksum}
+Page created by extension: https://SITE/civicrm/?page=CiviCRM&q=civicrm%2Feventcertificate&cid={contact.contact_id}&eid={event.event_id}&cs={contact.checksum}
 
 Things we would like to add:
 
